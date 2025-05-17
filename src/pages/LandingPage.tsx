@@ -408,7 +408,7 @@ const LandingPage: React.FC = () => {
                 quote: "The 3D models and AR experiences have completely transformed how I understand complex science concepts. It's like having a laboratory in my pocket!",
                 name: "James Kamau",
                 role: "Grade 8 Student",
-                image: "https://i.postimg.cc/QCyJxDvR/20250516-2218-Happy-Student-Learning-simple-compose-01jvd8d0yvfxvxvhpqxvxbxvxb.png"
+                image: "https://i.postimg.cc/28QkQwKM/20250517-1121-Grade-8-Student-Portrait-simple-compose-01jven9ftqey9v21cghtjtnnbp.png"
               },
               {
                 quote: "As a parent, I've seen a remarkable improvement in my daughter's engagement with STEM subjects. The interactive approach makes learning both fun and effective.",
