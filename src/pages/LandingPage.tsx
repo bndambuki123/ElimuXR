@@ -414,13 +414,13 @@ const LandingPage: React.FC = () => {
                 quote: "As a parent, I've seen a remarkable improvement in my daughter's engagement with STEM subjects. The interactive approach makes learning both fun and effective.",
                 name: "Sarah Muthoni",
                 role: "Parent",
-                image: "https://i.postimg.cc/RZHBXyGQ/20250516-2222-Happy-Parent-Testimonial-simple-compose-01jvd8kqyvfxvxvhpqxvxbxvxb.png"
+                image: "https://i.postimg.cc/kgtgVCdN/20250517-1130-Sarah-Muthoni-Kenyan-Tailor-simple-compose-01jventm8sfs88q4h3j2wt76yw.png"
               },
               {
                 quote: "ElimuXR has revolutionized my teaching methods. The platform's AR tools help me explain complex topics in ways that truly resonate with my students.",
                 name: "Peter Omondi",
                 role: "Science Teacher",
-                image: "https://i.postimg.cc/QMwvzg1L/20250516-2225-Happy-Teacher-Testimonial-simple-compose-01jvd8qryvfxvxvhpqxvxbxvxb.png"
+                image: "https://i.postimg.cc/VkbXz2Gp/20250517-1134-Kenyan-Teacher-s-3-D-Lesson-simple-compose-01jvep0bpfejtrct6xkm6j2fab.png"
               }
             ].map((testimonial, index) => (
               <motion.div
