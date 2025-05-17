@@ -10,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 const Register: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [role, setRole] = useState<'student' | 'teacher'>('student');
@@ -21,7 +22,7 @@ const Register: React.FC = () => {
     e.preventDefault();
     
     // Simple validation
-    if (!name || !email || !password) {
+    if (!name || !email || !phone || !password) {
       setError('Please fill in all fields');
       return;
     }
@@ -33,6 +34,13 @@ const Register: React.FC = () => {
     
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      return;
+    }
+
+    // Phone number validation
+    const phoneRegex = /^\+254\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      setError('Please enter a valid Kenyan phone number (+254XXXXXXXXX)');
       return;
     }
     
@@ -59,10 +67,11 @@ const Register: React.FC = () => {
         >
           <div>
             <div className="flex justify-center">
-              <svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" fill="#6D28D9"/>
-                <path d="M16 8L20 12M20 12L16 16M20 12H12M12 16L16 20M16 20L20 24M16 20H24" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <img 
+                src="https://i.postimg.cc/T3fpM65H/Learn-the-smart-way-2-removebg-preview.png" 
+                alt="Logo" 
+                className="h-12 w-auto" 
+              />
             </div>
             <h2 className="mt-6 text-center text-3xl font-display font-bold text-gray-900">
               Create your account
@@ -107,6 +116,20 @@ const Register: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                   placeholder="Email address"
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className="sr-only">Phone number</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  placeholder="Phone number (+254XXXXXXXXX)"
                 />
               </div>
               <div>
