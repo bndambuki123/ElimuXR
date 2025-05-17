@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, Monitor, Cuboid as Cube, Award, Zap, BrainCircuit, Video, Users, Smartphone, Cpu, Star, Check } from 'lucide-react';
+import { BookOpen, Monitor, Cuboid as Cube, Award, Zap, BrainCircuit, Video, Users, Smartphone, Cpu, Star, Check, Quote } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Button from '../components/ui/Button';
@@ -374,6 +374,92 @@ const LandingPage: React.FC = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What Our Users Say Section */}
+      <section className="py-16 md:py-24 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.h2 
+              className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              What Our Users Say
+            </motion.h2>
+            <motion.p 
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Hear from students, parents, and teachers who have experienced the power of immersive learning
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "The 3D models and AR experiences have completely transformed how I understand complex science concepts. It's like having a laboratory in my pocket!",
+                name: "James Kamau",
+                role: "Grade 8 Student",
+                image: "https://i.postimg.cc/QCyJxDvR/20250516-2218-Happy-Student-Learning-simple-compose-01jvd8d0yvfxvxvhpqxvxbxvxb.png"
+              },
+              {
+                quote: "As a parent, I've seen a remarkable improvement in my daughter's engagement with STEM subjects. The interactive approach makes learning both fun and effective.",
+                name: "Sarah Muthoni",
+                role: "Parent",
+                image: "https://i.postimg.cc/RZHBXyGQ/20250516-2222-Happy-Parent-Testimonial-simple-compose-01jvd8kqyvfxvxvhpqxvxbxvxb.png"
+              },
+              {
+                quote: "ElimuXR has revolutionized my teaching methods. The platform's AR tools help me explain complex topics in ways that truly resonate with my students.",
+                name: "Peter Omondi",
+                role: "Science Teacher",
+                image: "https://i.postimg.cc/QMwvzg1L/20250516-2225-Happy-Teacher-Testimonial-simple-compose-01jvd8qryvfxvxvhpqxvxbxvxb.png"
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl shadow-md overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="p-6">
+                  <Quote className="w-10 h-10 text-brand-yellow mb-4" />
+                  <p className="text-gray-600 mb-6 italic">"{testimonial.quote}"</p>
+                  <div className="flex items-center">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-12 h-12 rounded-full object-cover mr-4"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                      <p className="text-brand-yellow text-sm">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link to="/register">
+              <Button
+                variant="primary"
+                size="lg"
+                className="bg-brand-yellow hover:bg-brand-yellow/90 focus:ring-brand-yellow"
+              >
+                Join Our Community
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
