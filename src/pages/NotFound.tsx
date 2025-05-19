@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home } from 'lucide-react';
+import { Home, Construction } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Button from '../components/ui/Button';
@@ -18,10 +18,10 @@ const NotFound: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-9xl font-display font-bold text-primary-600">404</h1>
-          <h2 className="text-3xl font-semibold text-gray-800 mt-4 mb-6">Page Not Found</h2>
+          <Construction className="w-24 h-24 text-primary-600 mx-auto mb-6" />
+          <h1 className="text-3xl font-display font-bold text-gray-900 mb-4">Coming Soon</h1>
           <p className="text-gray-600 mb-8">
-            Oops! It seems like the page you're looking for doesn't exist or has been moved.
+            We're working hard to bring you an amazing experience. This feature will be available soon!
           </p>
           <Link to="/">
             <Button 
