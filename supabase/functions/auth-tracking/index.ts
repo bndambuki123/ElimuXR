@@ -1,64 +1,94 @@
-import { createClient } from 'npm:@supabase/supabase-js@2.39.3';
-
-const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+import { createClient } from "npm:@supabase/supabase-js@2.39.7";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+interface AuthTrackingPayload {
+  user_id: string;
+  event_type: 'signup' | 'login';
+  metadata?: Record<string, unknown>;
+}
+
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
   }
 
   try {
-    const { event_type, user_id, metadata } = await req.json();
+    // Only allow POST requests
+    if (req.method !== "POST") {
+      throw new Error("Method not allowed");
+    }
 
-    // Get IP and user agent
-    const ip_address = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip');
-    const user_agent = req.headers.get('user-agent');
+    // Get the request body
+    const payload: AuthTrackingPayload = await req.json();
 
-    const { data, error } = await supabase
+    // Validate required fields
+    if (!payload.user_id || !payload.event_type) {
+      throw new Error("Missing required fields");
+    }
+
+    // Validate event_type
+    if (!['signup', 'login'].includes(payload.event_type)) {
+      throw new Error("Invalid event type");
+    }
+
+    // Create Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          persistSession: false,
+        }
+      }
+    );
+
+    // Insert the auth tracking record
+    const { error } = await supabaseClient
       .from('auth_tracking')
-      .insert([
-        {
-          user_id,
-          event_type,
-          metadata,
-          ip_address,
-          user_agent,
-        },
-      ])
-      .select()
-      .single();
+      .insert({
+        user_id: payload.user_id,
+        event_type: payload.event_type,
+        metadata: payload.metadata || {},
+        ip_address: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip"),
+        user_agent: req.headers.get("user-agent"),
+      });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return new Response(
-      JSON.stringify({ data }),
+      JSON.stringify({ message: "Auth event tracked successfully" }),
       {
+        status: 200,
         headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        status: 200,
-      },
+      }
     );
+
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({
+        error: error.message || "An error occurred while tracking auth event",
+      }),
       {
+        status: 400,
         headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        status: 400,
-      },
+      }
     );
   }
 });
