@@ -559,10 +559,7 @@ const LandingPage: React.FC = () => {
                     <Button
                       variant={plan.highlighted ? "secondary" : "primary"}
                       fullWidth
-                      className={plan.highlighted 
-                        ? "bg-brand-yellow hover:bg-brand-yellow/90" 
-                        : ""
-                      }
+                      className="bg-brand-yellow hover:bg-brand-yellow/90 focus:ring-brand-yellow"
                     >
                       Get Started
                     </Button>
@@ -637,7 +634,8 @@ const LandingPage: React.FC = () => {
           <motion.h2 
             className="text-3xl md:text-4xl font-display font-bold mb-6"
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            whileInView={{
+              opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
