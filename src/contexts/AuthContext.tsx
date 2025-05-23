@@ -28,6 +28,29 @@ const MOCK_USERS = [
   { id: '2', name: 'Teacher Demo', email: 'teacher@example.com', password: 'password', role: 'teacher' }
 ];
 
+const trackAuthEvent = async (userId: string, eventType: 'login' | 'signup', metadata = {}) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/auth-tracking`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        event_type: eventType,
+        metadata,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to track auth event');
+    }
+  } catch (error) {
+    console.error('Error tracking auth event:', error);
+  }
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,7 +60,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const savedUser = localStorage.getItem('elimuxr_user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
+      trackAuthEvent(parsedUser.id, 'login', { method: 'auto' });
     }
     setLoading(false);
   }, []);
@@ -61,6 +86,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Save user to state and localStorage
       setUser(userWithoutPassword as User);
       localStorage.setItem('elimuxr_user', JSON.stringify(userWithoutPassword));
+      
+      // Track login event
+      await trackAuthEvent(userWithoutPassword.id, 'login', { method: 'password' });
+      
       setLoading(false);
       navigate('/dashboard');
     } else {
@@ -90,6 +119,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role,
       grade: role === 'student' ? 7 : undefined
     };
+    
+    // Track signup event
+    await trackAuthEvent(newUser.id, 'signup', { role });
     
     // Save user to state and localStorage
     setUser(newUser);
