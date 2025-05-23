@@ -472,27 +472,17 @@ const LandingPage: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Choose the plan that best fits your learning needs
+              Choose the plan that best fits your learning journey
             </motion.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: "Basic",
-                price: "Free",
+                name: "Monthly",
+                price: "KES 999",
+                period: "month",
                 description: "Perfect for trying out ElimuXR",
-                features: [
-                  "Access to basic 3D content",
-                  "Limited AR experiences",
-                  "Basic progress tracking",
-                  "Community support"
-                ]
-              },
-              {
-                name: "Premium",
-                price: "KES 999/mo",
-                description: "Most popular for active learners",
                 features: [
                   "Full access to 3D/AR content",
                   "Unlimited quiz attempts",
@@ -500,20 +490,35 @@ const LandingPage: React.FC = () => {
                   "Live class recordings",
                   "Offline access",
                   "Priority support"
+                ]
+              },
+              {
+                name: "Quarterly",
+                price: "KES 1,999",
+                period: "3 months",
+                description: "Most popular for active learners",
+                features: [
+                  "All Monthly features",
+                  "Save 33% compared to monthly",
+                  "Extended lesson history",
+                  "Priority chat support",
+                  "Progress analytics",
+                  "Study group access"
                 ],
                 highlighted: true
               },
               {
-                name: "School",
-                price: "Custom",
-                description: "Perfect for institutions",
+                name: "Annually",
+                price: "KES 5,999",
+                period: "year",
+                description: "Best value for committed learners",
                 features: [
-                  "All Premium features",
-                  "Bulk student accounts",
-                  "Teacher dashboard",
-                  "Custom content",
-                  "Training & support",
-                  "Analytics & reports"
+                  "All Quarterly features",
+                  "Save 50% compared to monthly",
+                  "Exclusive webinars",
+                  "1-on-1 tutor sessions",
+                  "Career guidance",
+                  "Certificate of completion"
                 ]
               }
             ].map((plan, index) => (
@@ -533,7 +538,7 @@ const LandingPage: React.FC = () => {
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <div className="mb-4">
                     <span className="text-4xl font-bold">{plan.price}</span>
-                    {plan.price !== "Custom" && <span className="text-sm opacity-80">/month</span>}
+                    <span className="text-sm opacity-80">/{plan.period}</span>
                   </div>
                   <p className={`mb-6 ${plan.highlighted ? 'text-gray-300' : 'text-gray-600'}`}>
                     {plan.description}
@@ -638,6 +643,7 @@ const LandingPage: React.FC = () => {
           >
             Ready to Transform Your Learning Experience?
           </motion.h2>
+          
           <motion.p 
             className="text-xl opacity-90 mb-8 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
