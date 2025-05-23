@@ -449,17 +449,122 @@ const LandingPage: React.FC = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 text-center">
-            <Link to="/register">
-              <Button
-                variant="primary"
-                size="lg"
-                className="bg-brand-yellow hover:bg-brand-yellow/90 focus:ring-brand-yellow"
+      {/* Pricing Section */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.h2 
+              className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              Simple, Transparent Pricing
+            </motion.h2>
+            <motion.p 
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Choose the plan that best fits your learning needs
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Basic",
+                price: "Free",
+                description: "Perfect for trying out ElimuXR",
+                features: [
+                  "Access to basic 3D content",
+                  "Limited AR experiences",
+                  "Basic progress tracking",
+                  "Community support"
+                ]
+              },
+              {
+                name: "Premium",
+                price: "KES 999/mo",
+                description: "Most popular for active learners",
+                features: [
+                  "Full access to 3D/AR content",
+                  "Unlimited quiz attempts",
+                  "AI tutor assistance",
+                  "Live class recordings",
+                  "Offline access",
+                  "Priority support"
+                ],
+                highlighted: true
+              },
+              {
+                name: "School",
+                price: "Custom",
+                description: "Perfect for institutions",
+                features: [
+                  "All Premium features",
+                  "Bulk student accounts",
+                  "Teacher dashboard",
+                  "Custom content",
+                  "Training & support",
+                  "Analytics & reports"
+                ]
+              }
+            ].map((plan, index) => (
+              <motion.div
+                key={index}
+                className={`rounded-xl shadow-lg overflow-hidden ${
+                  plan.highlighted 
+                    ? 'bg-brand-dark text-white ring-4 ring-brand-yellow' 
+                    : 'bg-white'
+                }`}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                Join Our Community
-              </Button>
-            </Link>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  <div className="mb-4">
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    {plan.price !== "Custom" && <span className="text-sm opacity-80">/month</span>}
+                  </div>
+                  <p className={`mb-6 ${plan.highlighted ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {plan.description}
+                  </p>
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center">
+                        <Check className={`w-5 h-5 mr-3 ${
+                          plan.highlighted ? 'text-brand-yellow' : 'text-primary-600'
+                        }`} />
+                        <span className={plan.highlighted ? 'text-gray-300' : 'text-gray-600'}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/register">
+                    <Button
+                      variant={plan.highlighted ? "secondary" : "primary"}
+                      fullWidth
+                      className={plan.highlighted 
+                        ? "bg-brand-yellow hover:bg-brand-yellow/90" 
+                        : ""
+                      }
+                    >
+                      Get Started
+                    </Button>
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
