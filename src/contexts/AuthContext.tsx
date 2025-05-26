@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 // Types
 type User = {
@@ -22,32 +29,25 @@ type AuthContextType = {
 // Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for demonstration
-const MOCK_USERS = [
-  { id: '1', name: 'Student Demo', email: 'student@example.com', password: 'password', role: 'student', grade: 7 },
-  { id: '2', name: 'Teacher Demo', email: 'teacher@example.com', password: 'password', role: 'teacher' }
-];
-
 const trackAuthEvent = async (userId: string, eventType: 'login' | 'signup', metadata = {}) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/auth-tracking`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const { error } = await supabase
+      .from('auth_tracking')
+      .insert({
         user_id: userId,
         event_type: eventType,
         metadata,
-      }),
-    });
+        ip_address: window.location.hostname,
+        user_agent: navigator.userAgent
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to track auth event');
+    if (error) {
+      console.error('Error tracking auth event:', error);
+      throw error;
     }
   } catch (error) {
-    console.error('Error tracking auth event:', error);
+    console.error('Failed to track auth event:', error);
+    throw error;
   }
 };
 
@@ -62,7 +62,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      trackAuthEvent(parsedUser.id, 'login', { method: 'auto' });
+      trackAuthEvent(parsedUser.id, 'login', { method: 'auto' })
+        .catch(error => console.error('Error tracking auto login:', error));
     }
     setLoading(false);
   }, []);
@@ -70,71 +71,108 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login function
   const login = async (email: string, password: string) => {
     setLoading(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Find user
-    const foundUser = MOCK_USERS.find(
-      u => u.email === email && u.password === password
-    );
-    
-    if (foundUser) {
-      // Remove password before storing
-      const { password, ...userWithoutPassword } = foundUser;
-      
-      // Save user to state and localStorage
-      setUser(userWithoutPassword as User);
-      localStorage.setItem('elimuxr_user', JSON.stringify(userWithoutPassword));
-      
-      // Track login event
-      await trackAuthEvent(userWithoutPassword.id, 'login', { method: 'password' });
-      
+    try {
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        const userData = {
+          id: user.id,
+          name: profile.full_name,
+          email: user.email,
+          role: profile.role,
+          grade: profile.grade
+        };
+
+        setUser(userData);
+        localStorage.setItem('elimuxr_user', JSON.stringify(userData));
+        await trackAuthEvent(user.id, 'login', { method: 'password' });
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
       setLoading(false);
-      navigate('/dashboard');
-    } else {
-      setLoading(false);
-      throw new Error('Invalid email or password');
     }
   };
 
   // Register function
   const register = async (name: string, email: string, password: string, role: 'student' | 'teacher') => {
     setLoading(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Check if user exists
-    if (MOCK_USERS.some(u => u.email === email)) {
+    try {
+      const { data: { user }, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            role: role
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            full_name: name,
+            role: role,
+            grade: role === 'student' ? 7 : null,
+            phone: '' // This should be updated later with actual phone number
+          });
+
+        if (profileError) throw profileError;
+
+        const userData = {
+          id: user.id,
+          name,
+          email,
+          role,
+          grade: role === 'student' ? 7 : undefined
+        };
+
+        setUser(userData);
+        localStorage.setItem('elimuxr_user', JSON.stringify(userData));
+        await trackAuthEvent(user.id, 'signup', { role });
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    } finally {
       setLoading(false);
-      throw new Error('User already exists');
     }
-    
-    // Create new user (in a real app, this would send to a backend)
-    const newUser = {
-      id: Math.random().toString(36).substring(2, 9),
-      name,
-      email,
-      role,
-      grade: role === 'student' ? 7 : undefined
-    };
-    
-    // Track signup event
-    await trackAuthEvent(newUser.id, 'signup', { role });
-    
-    // Save user to state and localStorage
-    setUser(newUser);
-    localStorage.setItem('elimuxr_user', JSON.stringify(newUser));
-    setLoading(false);
-    navigate('/dashboard');
   };
 
   // Logout function
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('elimuxr_user');
-    navigate('/');
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      setUser(null);
+      localStorage.removeItem('elimuxr_user');
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   };
 
   return (
